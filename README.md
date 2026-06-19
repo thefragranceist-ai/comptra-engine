@@ -2,6 +2,8 @@
 
 **Cap what every AI agent can spend, on top of any rail — and prove every decision in a tamper-evident ledger.**
 
+> **Try it live:** [thefragranceist-ai.github.io/comptra-engine](https://thefragranceist-ai.github.io/comptra-engine/) — the register console runs the *real* `@comptra/core` (this repo's hash-chain, Merkle and Ed25519 checkpoints) entirely in your browser. Fire transactions, verify the chain, tamper with a record and watch it fracture, export and re-verify the signed audit report.
+
 Comptra is a neutral, rail-agnostic **spend-control gate** plus a cryptographically **verifiable audit ledger** for AI agents. It sits on top of any issuer (Stripe Issuing, Lithic, x402/stablecoin) and:
 
 1. **Gates every transaction** against a per-agent policy (per-call cap, daily/monthly cap, vendor allow/deny, MCC allow, token-bucket rate limit, instant freeze) — decided in-memory in well under a millisecond, on the authorization path.
