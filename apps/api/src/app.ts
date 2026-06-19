@@ -34,7 +34,7 @@ export async function keyHash(raw: string): Promise<string> {
   return sha256Hex(enc.encode(raw));
 }
 
-export function createApp(stores: Stores, opts: { rail?: string; now?: () => number; pubKeyHex?: string } = {}) {
+export function createApp(stores: Stores, opts: { rail?: string; now?: () => number; pubKeyHex?: string; signer?: { privateKey: CryptoKey; keyId: string } } = {}) {
   const app = new Hono<{ Variables: Vars }>();
   const now = opts.now ?? (() => Date.now());
   const deps = {
@@ -131,7 +131,7 @@ export function createApp(stores: Stores, opts: { rail?: string; now?: () => num
       ? await stores.ledger.readChain(`${tenant}|${agent}|${customer}`)
       : (await stores.ledger.readAll()).filter((r) => r.tenant_id === tenant);
     const policy = agent ? (await stores.policies.get(tenant, agent, customer)) ?? undefined : undefined;
-    const report = await buildReport({ tenantId: tenant, agentId: agent ?? null, customerId: agent ? customer : null, records, policy, pubKeyHex: opts.pubKeyHex ?? '', generatedAt: new Date(now()).toISOString() });
+    const report = await buildReport({ tenantId: tenant, agentId: agent ?? null, customerId: agent ? customer : null, records, policy, pubKeyHex: opts.pubKeyHex ?? '', generatedAt: new Date(now()).toISOString(), signer: opts.signer });
     return c.json(report);
   });
 

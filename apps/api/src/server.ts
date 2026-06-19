@@ -4,7 +4,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { createApp, mintKey, keyHash, type Stores } from './app.ts';
 import { FileLedgerStore, FileKV, FileCounterStore, FilePolicyStore, KeyStore, MemIdempotencyStore } from './store-file.ts';
 import type { ApiKeyRecord } from './store-file.ts';
-import { generateEd25519, exportPublicKeyHex, exportPrivateKeyPkcs8Hex } from '@comptra/core';
+import { generateEd25519, exportPublicKeyHex, exportPrivateKeyPkcs8Hex, importPrivateKey } from '@comptra/core';
 import type { Counters } from '@comptra/core';
 import { Policy } from '@comptra/schema';
 
@@ -15,13 +15,18 @@ if (!existsSync(DATA)) mkdirSync(DATA, { recursive: true });
 // signing key (persisted; in prod this lives outside the DB trust domain)
 const keyFile = `${DATA}/signing-key.json`;
 let pubKeyHex = '';
+let privHex = '';
 if (existsSync(keyFile)) {
-  pubKeyHex = JSON.parse(readFileSync(keyFile, 'utf8')).public_key_hex;
+  const j = JSON.parse(readFileSync(keyFile, 'utf8'));
+  pubKeyHex = j.public_key_hex;
+  privHex = j.private_key_pkcs8_hex;
 } else {
   const kp = await generateEd25519();
   pubKeyHex = await exportPublicKeyHex(kp.publicKey);
-  writeFileSync(keyFile, JSON.stringify({ public_key_hex: pubKeyHex, private_key_pkcs8_hex: await exportPrivateKeyPkcs8Hex(kp.privateKey) }, null, 2));
+  privHex = await exportPrivateKeyPkcs8Hex(kp.privateKey);
+  writeFileSync(keyFile, JSON.stringify({ public_key_hex: pubKeyHex, private_key_pkcs8_hex: privHex }, null, 2));
 }
+const signPrivateKey = await importPrivateKey(privHex);
 
 const keys = new KeyStore(new FileKV<ApiKeyRecord>(`${DATA}/keys.json`));
 const stores: Stores = {
@@ -52,7 +57,7 @@ if (keys.isEmpty()) {
   );
 }
 
-const app = createApp(stores, { rail: 'simulated', pubKeyHex });
+const app = createApp(stores, { rail: 'simulated', pubKeyHex, signer: { privateKey: signPrivateKey, keyId: 'comptra-ed25519-1' } });
 
 // serve the static dashboard at /
 app.use('/*', serveStatic({ root: './apps/dashboard' }));
