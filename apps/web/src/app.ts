@@ -1,6 +1,6 @@
 import {
   decide, emptyCounters, sealRecord, verifyChain, buildCheckpoint, verifyCheckpoint,
-  generateEd25519, exportPublicKeyHex, exportPrivateKeyPkcs8Hex, importPrivateKey, GENESIS_HASH,
+  generateEd25519, exportPublicKeyHex, exportPrivateKeyPkcs8Hex, importPrivateKey, GENESIS_HASH, sha256Hex,
 } from '@comptra/core';
 import type { Counters } from '@comptra/core';
 import { Policy } from '@comptra/schema';
@@ -268,5 +268,57 @@ function wire() {
   rv.addEventListener('change', () => { if (rv.files?.[0]) reVerify(rv.files[0]); });
 }
 
-wire();
-boot();
+// ---------- login gate (soft client-side access control for the private preview) ----------
+const GATE_HASH = '5fda4be13d5ae8eb3d24c4b3d95f82ed3a74e920f6be3e8f3472bb2038ef09ed';
+const PW_HASH = '238bdcabee8b4861959964effe497ea0b94a08877331526cc980f2175d90b899';
+const encG = new TextEncoder();
+
+function drawGateSeal(state: 'sealed' | 'broken', k = 1) {
+  const c = document.querySelector('#gate-seal') as HTMLCanvasElement | null; if (!c) return;
+  const d = Math.min(2, devicePixelRatio || 1), sz = 150; c.width = sz * d; c.height = sz * d;
+  const x = c.getContext('2d')!; x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, sz, sz);
+  drawSeal(x, sz / 2, sz / 2, 52, GATE_HASH, { t: 1, state, k });
+}
+async function unseal(user: string, pw: string) {
+  return (await sha256Hex(encG.encode(user.trim().toUpperCase() + ':' + pw))) === PW_HASH;
+}
+async function openConsole(animate: boolean) {
+  sessionStorage.setItem('comptra.demo.ok', '1');
+  wire();
+  await boot();
+  const gate = document.querySelector('#gate') as HTMLElement | null;
+  if (!gate) return;
+  if (animate && !RM) {
+    const t0 = performance.now();
+    const tick = (n: number) => {
+      const e = (n - t0) / 1000;
+      drawGateSeal('sealed', 1 - Math.sin(Math.min(1, e / 0.3) * Math.PI) * 0.9); // wax strike
+      if (e < 0.34) requestAnimationFrame(tick);
+      else { gate.classList.add('hidden'); setTimeout(() => gate.remove(), 600); }
+    };
+    requestAnimationFrame(tick);
+  } else { gate.remove(); }
+}
+function setupGate() {
+  const gate = document.querySelector('#gate');
+  if (!gate) { wire(); boot(); return; }
+  drawGateSeal('sealed');
+  const form = document.querySelector('#gate-form') as HTMLFormElement;
+  const err = document.querySelector('#gate-err') as HTMLElement;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const u = (document.querySelector('#gate-user') as HTMLInputElement).value;
+    const pw = (document.querySelector('#gate-pw') as HTMLInputElement).value;
+    if (await unseal(u, pw)) { err.textContent = ''; openConsole(true); }
+    else {
+      err.textContent = 'wrong username or password';
+      drawGateSeal('broken');
+      (document.querySelector('#gate-pw') as HTMLInputElement).value = '';
+      setTimeout(() => drawGateSeal('sealed'), 1000);
+    }
+  });
+  (document.querySelector('#gate-user') as HTMLInputElement).focus();
+}
+
+if (sessionStorage.getItem('comptra.demo.ok')) openConsole(false);
+else setupGate();

@@ -92,6 +92,25 @@ tbody:empty::after{content:"the register is empty. fire a transaction on the pla
 .foot{margin-top:46px;padding-top:18px;border-top:1px solid var(--hair);display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:.04em;flex-wrap:wrap;gap:10px}
 .foot b{color:var(--ink2);font-weight:500}
 .hide-s{}
+
+/* login gate — the private-preview lock */
+.gate{position:fixed;inset:0;z-index:100;background:var(--paper);display:grid;place-items:center;padding:24px;overflow:hidden}
+.gate::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='ng'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23ng)' opacity='0.045'/%3E%3C/svg%3E")}
+.gate::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(58% 52% at 50% 33%,rgba(255,253,247,.7),transparent 60%),radial-gradient(150% 150% at 50% 122%,transparent 55%,rgba(22,20,15,.08))}
+.gate-card{position:relative;z-index:2;width:min(430px,92vw);display:flex;flex-direction:column;align-items:center;text-align:center}
+#gate-seal{width:150px;height:150px;margin-bottom:20px}
+.gate-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--green)}
+.gate-title{font-family:var(--disp);font-weight:700;font-size:30px;color:var(--ink);margin-top:10px;letter-spacing:-.015em}
+.gate-sub{font-size:14px;color:var(--ink2);margin-top:9px;max-width:30ch;line-height:1.5}
+#gate-form{display:flex;flex-direction:column;gap:10px;margin-top:24px;width:100%}
+.gf{font-family:var(--mono);font-size:14px;color:var(--ink);background:rgba(255,253,247,.55);border:1px solid var(--hair2);border-radius:7px;padding:12px 14px;outline:none;text-align:center;letter-spacing:.04em}
+.gf:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(28,122,79,.12)}
+.gate-btn{font-family:var(--mono);font-size:13px;letter-spacing:.14em;color:var(--paper);background:var(--ink);border:0;border-radius:8px;padding:14px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 -2px 0 rgba(0,0,0,.35),0 2px 0 rgba(0,0,0,.18);transition:transform .12s;margin-top:2px}
+.gate-btn:active{transform:translateY(2px)}
+.gate-err{font-family:var(--mono);font-size:12px;color:var(--verm);margin-top:14px;min-height:16px;letter-spacing:.02em}
+.gate-hint{font-family:var(--mono);font-size:10.5px;color:var(--ink3);margin-top:18px;letter-spacing:.06em}
+.gate.hidden{opacity:0;pointer-events:none;transition:opacity .55s ease}
+
 @media(max-width:860px){
   .hero{grid-template-columns:1fr;gap:24px}.bed{height:240px}.bed canvas{width:190px;height:190px}
   .work{grid-template-columns:1fr;gap:34px}
@@ -101,6 +120,21 @@ tbody:empty::after{content:"the register is empty. fire a transaction on the pla
 </style>
 </head>
 <body>
+<div id="gate" class="gate">
+  <div class="gate-card">
+    <canvas id="gate-seal" width="150" height="150"></canvas>
+    <div class="gate-eyebrow">Comptra · private preview</div>
+    <div class="gate-title">The register is sealed.</div>
+    <div class="gate-sub">This console runs the real engine. Enter your credentials to unseal it.</div>
+    <form id="gate-form" autocomplete="on">
+      <input id="gate-user" class="gf" placeholder="username" autocomplete="username" spellcheck="false" autocapitalize="characters">
+      <input id="gate-pw" class="gf" type="password" placeholder="password" autocomplete="current-password">
+      <button class="gate-btn" type="submit">UNSEAL ↵</button>
+    </form>
+    <div class="gate-err" id="gate-err"></div>
+    <div class="gate-hint">access by invitation · comptra</div>
+  </div>
+</div>
 <main class="page">
   <div class="mast">
     <canvas id="logo" width="30" height="30"></canvas>

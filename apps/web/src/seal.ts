@@ -44,13 +44,25 @@ function paintSeal(ctx: Ctx, R: number, hex: string, t: number, state: SealState
   const broken = state === 'void' || state === 'broken', s = seed(broken ? corrupt(hex) : hex), small = R < 16;
   const bloom = clamp(k / 0.17, 0, 1), setFront = clamp((k - 0.17) / 0.4, 0, 1), cool = clamp((k - 0.58) / 0.42, 0, 1);
   ctx.save(); ctx.rotate(s.rot);
+  // luminous wax BODY behind the guilloche — semi-transparent so paper still breathes through the
+  // open rosette while it reads as a glowing green medallion with a bright core (the WOW).
+  if (state === 'sealed' && !small) {
+    const wet = k < 1 ? clamp((0.17 - k) / 0.17, 0, 1) : 0;
+    const bg = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 1.02);
+    bg.addColorStop(0, `rgba(123,255,200,${0.5 + 0.35 * wet})`);
+    bg.addColorStop(0.46, 'rgba(28,122,79,0.46)');
+    bg.addColorStop(0.9, 'rgba(12,51,34,0.52)');
+    bg.addColorStop(1, 'rgba(22,20,15,0.58)');
+    ctx.beginPath(); ctx.arc(0, 0, R * 1.02, 0, 7); ctx.fillStyle = bg; ctx.fill();
+  }
   function applyFill(plateB: boolean) {
     if (plateB) { const c = mix(INK, PAPER, 0.14); ctx.fillStyle = c; ctx.strokeStyle = c; return; }
     if (state === 'sealed') {
-      let gc = mix(GREEN, '#7BFFC0', bloom * (1 - cool)); gc = mix(gc, '#15623F', cool * 0.6 * (1 - cool) * 2);
-      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, R), edge = Math.max(0.02, Math.min(1, setFront));
-      g.addColorStop(0, gc); g.addColorStop(edge * 0.92, gc); g.addColorStop(Math.min(1, edge * 0.92 + 0.06), INK); g.addColorStop(1, INK);
-      ctx.fillStyle = g; ctx.strokeStyle = gc;
+      // static rich wax bloom; k stays a transient strike overlay (wetter core while striking)
+      const core = k < 1 ? mix('#5BF2A9', '#D8FFEC', clamp((0.17 - k) / 0.17, 0, 1)) : '#5BF2A9';
+      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, R);
+      g.addColorStop(0, core); g.addColorStop(0.55, GREEN); g.addColorStop(0.92, '#0c3322'); g.addColorStop(1, INK);
+      ctx.fillStyle = g; ctx.strokeStyle = GREEN;
     } else if (broken) { ctx.fillStyle = VERM; ctx.strokeStyle = VERM; } else { ctx.fillStyle = INK; ctx.strokeStyle = INK; }
   }
   if (small) {
@@ -94,9 +106,26 @@ function ringBackstop(ctx: Ctx, R: number, state: SealState) {
 export function drawSeal(ctx: Ctx, cx: number, cy: number, R: number, hex: string, opts: { t?: number; state?: SealState; k?: number; flash?: number | null } = {}) {
   let { t = 1, state = 'sealed', k = 1, flash = null } = opts;
   if (flash != null) k = clamp(1 - flash, 0, 1);
+  const small = R < 16;
   ctx.save(); ctx.translate(cx, cy);
   if (state === 'sealed' && k < 1) { const press = lerp(1.06, 1.0, easeOutExpo(Math.min(k / 0.17, 1))) * (1 + 0.012 * Math.sin(clamp((k - 0.58) / 0.42, 0, 1) * Math.PI)); ctx.scale(press, press); }
-  paintSeal(ctx, R, hex, t, state, k); ringBackstop(ctx, R, state); ctx.restore();
+  // cast shadow — the wax sits on the paper and lifts off it
+  if (!small) {
+    ctx.save(); ctx.translate(2, 5); ctx.scale(1, 0.84);
+    const sh = ctx.createRadialGradient(0, 0, R * 0.4, 0, 0, R * 1.08);
+    sh.addColorStop(0, 'rgba(22,20,15,.28)'); sh.addColorStop(0.7, 'rgba(22,20,15,.16)'); sh.addColorStop(1, 'rgba(22,20,15,0)');
+    ctx.fillStyle = sh; ctx.beginPath(); ctx.arc(0, 0, R * 1.08, 0, 7); ctx.fill(); ctx.restore();
+  }
+  paintSeal(ctx, R, hex, t, state, k); ringBackstop(ctx, R, state);
+  // specular sheen, light raking from top-left
+  if (!small && state === 'sealed') {
+    ctx.save(); ctx.globalCompositeOperation = 'soft-light';
+    ctx.beginPath(); ctx.arc(0, 0, R * 1.06, 0, 7); ctx.clip();
+    const sp = ctx.createRadialGradient(-R * 0.32, -R * 0.36, 0, -R * 0.32, -R * 0.36, R * 1.0);
+    sp.addColorStop(0, 'rgba(255,253,247,.5)'); sp.addColorStop(1, 'rgba(255,253,247,0)');
+    ctx.fillStyle = sp; ctx.fillRect(-R * 1.3, -R * 1.3, R * 2.6, R * 2.6); ctx.restore();
+  }
+  ctx.restore();
 }
 
 const RING_D = new Path2D('M8 8 H40 V19 H32 V16 H16 V32 H32 V29 H40 V40 H8 Z');
