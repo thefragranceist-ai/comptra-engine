@@ -1,0 +1,9 @@
+{
+  "name": "comptra",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Comptra SDK — cap what every agent can spend, on top of any rail.",
+  "exports": { ".": "./src/index.ts" },
+  "dependencies": { "@comptra/core": "0.1.0", "@comptra/schema": "0.1.0" }
+}
