@@ -1,0 +1,12 @@
+# Deploy the Comptra gate API to Cloudflare Workers.
+#   npx wrangler login                 # one-time, interactive (opens a browser)
+#   npx wrangler secret put COMPTRA_ADMIN_KEY               # paste a cmp_test_… key
+#   npx wrangler secret put COMPTRA_SIGNING_KEY_PKCS8_HEX   # from: npm run comptra -- keygen
+#   npx wrangler deploy
+#
+# The same Hono app the tests exercise runs here. This entry uses in-memory stores (ephemeral
+# per isolate) — swap LedgerStore/CounterStore for D1 / Durable Objects for durable production.
+name = "comptra-api"
+main = "apps/api/src/worker.ts"
+compatibility_date = "2026-06-01"
+workers_dev = true
