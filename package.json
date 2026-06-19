@@ -4,24 +4,31 @@
   "type": "module",
   "version": "0.1.0",
   "description": "Comptra — spend-control + tamper-evident audit-ledger for AI agents.",
-  "workspaces": ["packages/*", "apps/*"],
-  "engines": { "node": ">=22" },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "tsx watch apps/api/src/server.ts",
     "start": "tsx apps/api/src/server.ts",
     "test": "node --import tsx --test \"test/**/*.test.ts\"",
     "demo": "tsx test/demo.ts",
     "comptra": "tsx bin/comptra.ts",
+    "build:web": "esbuild apps/web/src/app.ts --bundle --format=esm --target=es2022 --minify --outfile=docs/app.js && node -e \"require('fs').copyFileSync('apps/web/index.html','docs/index.html')\"",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
+    "@types/node": "^22.10.0",
+    "esbuild": "^0.28.1",
     "tsx": "^4.20.0",
-    "typescript": "^5.6.3",
-    "@types/node": "^22.10.0"
+    "typescript": "^5.6.3"
   },
   "dependencies": {
-    "hono": "^4.6.14",
     "@hono/node-server": "^1.13.7",
+    "hono": "^4.6.14",
     "zod": "^3.24.1"
   }
 }
