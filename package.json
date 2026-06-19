@@ -1,0 +1,27 @@
+{
+  "name": "comptra-monorepo",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Comptra — spend-control + tamper-evident audit-ledger for AI agents.",
+  "workspaces": ["packages/*", "apps/*"],
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "tsx watch apps/api/src/server.ts",
+    "start": "tsx apps/api/src/server.ts",
+    "test": "node --import tsx --test \"test/**/*.test.ts\"",
+    "demo": "tsx test/demo.ts",
+    "comptra": "tsx bin/comptra.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0",
+    "typescript": "^5.6.3",
+    "@types/node": "^22.10.0"
+  },
+  "dependencies": {
+    "hono": "^4.6.14",
+    "@hono/node-server": "^1.13.7",
+    "zod": "^3.24.1"
+  }
+}
