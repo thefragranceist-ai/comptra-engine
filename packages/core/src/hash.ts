@@ -21,7 +21,7 @@ export function fromHex(h: string): Uint8Array {
 const utf8 = new TextEncoder();
 
 export async function sha256(bytes: Uint8Array): Promise<Uint8Array> {
-  const d = await crypto.subtle.digest('SHA-256', bytes);
+  const d = await crypto.subtle.digest('SHA-256', bytes as BufferSource);
   return new Uint8Array(d);
 }
 
@@ -56,12 +56,12 @@ export async function generateEd25519(): Promise<Ed25519KeyPair> {
 }
 
 export async function signEd25519(privateKey: CryptoKey, bytes: Uint8Array): Promise<Uint8Array> {
-  return new Uint8Array(await crypto.subtle.sign({ name: 'Ed25519' }, privateKey, bytes));
+  return new Uint8Array(await crypto.subtle.sign({ name: 'Ed25519' }, privateKey, bytes as BufferSource));
 }
 
 export async function verifyEd25519(publicKeyRawHex: string, sigB64: string, bytes: Uint8Array): Promise<boolean> {
   const pub = await importPublicKey(publicKeyRawHex);
-  return crypto.subtle.verify({ name: 'Ed25519' }, pub, b64decode(sigB64), bytes);
+  return crypto.subtle.verify({ name: 'Ed25519' }, pub, b64decode(sigB64) as BufferSource, bytes as BufferSource);
 }
 
 export async function exportPublicKeyHex(publicKey: CryptoKey): Promise<string> {
@@ -73,11 +73,11 @@ export async function exportPrivateKeyPkcs8Hex(privateKey: CryptoKey): Promise<s
 }
 
 export async function importPublicKey(rawHex: string): Promise<CryptoKey> {
-  return crypto.subtle.importKey('raw', fromHex(rawHex), { name: 'Ed25519' }, true, ['verify']);
+  return crypto.subtle.importKey('raw', fromHex(rawHex) as BufferSource, { name: 'Ed25519' }, true, ['verify']);
 }
 
 export async function importPrivateKey(pkcs8Hex: string): Promise<CryptoKey> {
-  return crypto.subtle.importKey('pkcs8', fromHex(pkcs8Hex), { name: 'Ed25519' }, true, ['sign']);
+  return crypto.subtle.importKey('pkcs8', fromHex(pkcs8Hex) as BufferSource, { name: 'Ed25519' }, true, ['sign']);
 }
 
 export function b64encode(bytes: Uint8Array): string {

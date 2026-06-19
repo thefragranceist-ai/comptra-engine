@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { merkleRootHex, buildCheckpoint, verifyCheckpoint, generateEd25519, exportPublicKeyHex, sealRecord, GENESIS_HASH } from '@comptra/core';
-import type { LedgerRecord, RecordDraft } from '@comptra/core';
+import type { RecordDraft } from '@comptra/core';
+import type { LedgerRecord } from '@comptra/schema';
 
 function draft(seq: number, amount: number): RecordDraft {
   return {

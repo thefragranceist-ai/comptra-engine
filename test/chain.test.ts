@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { sealRecord, verifyChain, GENESIS_HASH } from '@comptra/core';
-import type { LedgerRecord, RecordDraft } from '@comptra/core';
+import type { RecordDraft } from '@comptra/core';
+import type { LedgerRecord } from '@comptra/schema';
 
 function draft(seq: number, amount: number, decision: 'PASS' | 'BLOCK' = 'PASS'): RecordDraft {
   return {
