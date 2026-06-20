@@ -89,6 +89,24 @@ export const LedgerRecord = z.object({
 });
 export type LedgerRecord = z.infer<typeof LedgerRecord>;
 
+// ---- witness cosignature (the split-view defense) ----
+// An independent witness co-signs a checkpoint ONLY after verifying an RFC 9162 consistency proof
+// from the last head it saw to this one. A quorum of cosignatures makes a fork detectable: an
+// operator cannot get t-of-n honest witnesses to cosign two divergent heads at the same tree_size.
+export const Cosignature = z.object({
+  witness_id: z.string(),
+  ts: z.string(),
+  signature: z.string(), // base64 Ed25519 over JCS(WitnessStatement)
+});
+export type Cosignature = z.infer<typeof Cosignature>;
+
+export const WitnessRef = z.object({
+  witness_id: z.string(),
+  public_key: z.string(), // hex raw Ed25519
+  operator: z.string().default('independent'),
+});
+export type WitnessRef = z.infer<typeof WitnessRef>;
+
 // ---- signed checkpoint (anchors the chain against operator rewrite) ----
 export const Checkpoint = z.object({
   v: z.literal(1),
@@ -99,7 +117,8 @@ export const Checkpoint = z.object({
   prev_checkpoint_hash: z.string().length(64),
   ts: z.string(),
   key_id: z.string(),
-  signature: z.string(), // base64 Ed25519 over JCS(checkpoint - signature)
+  signature: z.string(), // base64 Ed25519 over JCS(checkpoint - signature - cosignatures)
+  cosignatures: z.array(Cosignature).default([]), // NOT covered by `signature`; each witness signs its own statement
 });
 export type Checkpoint = z.infer<typeof Checkpoint>;
 
@@ -125,6 +144,11 @@ export const AuditReport = z.object({
   policy: Policy.partial().optional(),
   records: z.array(LedgerRecord),
   checkpoints: z.array(Checkpoint),
+  witnessing: z.object({
+    threshold: z.number().int().nonnegative(),
+    witnesses: z.array(WitnessRef),
+    note: z.string(),
+  }).optional(),
   public_key: z.string(), // hex raw Ed25519
   key_provenance: z.string(),
   canonicalization_spec: z.string(),

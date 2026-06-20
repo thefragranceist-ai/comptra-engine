@@ -39,7 +39,7 @@ export async function merkleRootHex(records: LedgerRecord[]): Promise<string> {
   return toHex(await merkleRoot(leaves));
 }
 
-export type CheckpointBody = Omit<Checkpoint, 'signature'>;
+export type CheckpointBody = Omit<Checkpoint, 'signature' | 'cosignatures'>;
 
 export async function buildCheckpoint(args: {
   tenant_id: string;
@@ -61,14 +61,21 @@ export async function buildCheckpoint(args: {
     key_id: args.key_id,
   };
   const signature = b64encode(await signEd25519(args.signPrivateKey, canonicalBytes(body)));
-  return { ...body, signature };
+  return { ...body, signature, cosignatures: [] };
+}
+
+/** Verify only the operator's Ed25519 signature over a checkpoint body (no records needed).
+ *  Witnesses use this: they attest to (tree_size, root_hash) via consistency proofs, not the full log. */
+export async function verifyCheckpointSignature(cp: Checkpoint, pubKeyHex: string): Promise<boolean> {
+  const { signature, cosignatures, ...body } = cp;
+  return verifyEd25519(pubKeyHex, signature, canonicalBytes(body));
 }
 
 export async function verifyCheckpoint(cp: Checkpoint, records: LedgerRecord[], pubKeyHex: string): Promise<{ ok: boolean; reason?: string }> {
   if (records.length < cp.tree_size) return { ok: false, reason: 'fewer records than the checkpoint tree_size' };
   const root = await merkleRootHex(records.slice(0, cp.tree_size));
   if (root !== cp.root_hash) return { ok: false, reason: 'recomputed Merkle root does not match the signed root' };
-  const { signature, ...body } = cp;
+  const { signature, cosignatures, ...body } = cp;
   const sigOk = await verifyEd25519(pubKeyHex, signature, canonicalBytes(body));
   if (!sigOk) return { ok: false, reason: 'Ed25519 checkpoint signature invalid' };
   return { ok: true };

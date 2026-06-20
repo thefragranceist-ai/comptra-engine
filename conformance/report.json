@@ -1,0 +1,295 @@
+{
+  "report": "comptra-agent-spend-audit",
+  "version": 1,
+  "generated_at": "2026-06-20T12:00:00.000Z",
+  "tenant_id": "acme",
+  "scope": {
+    "agent_id": "agent_42",
+    "end_customer_id": null,
+    "from_ts": null,
+    "to_ts": null
+  },
+  "summary": {
+    "records": 9,
+    "sealed": 7,
+    "blocked": 2,
+    "verified": true,
+    "root_hash": "d45f95d8e7340ca4f6caea089f5387d7bd724b1358860b316f6e3185f8e21954"
+  },
+  "records": [
+    {
+      "v": 1,
+      "seq": 0,
+      "tenant_id": "acme",
+      "chain_key": "acme|agent_42|-",
+      "agent_id": "agent_42",
+      "end_customer_id": "-",
+      "decision": "PASS",
+      "reason_code": "PASS",
+      "vendor": {
+        "name": "openai",
+        "mcc": "7372",
+        "country": "US"
+      },
+      "amount_minor": 1000,
+      "approved_amount_minor": 1000,
+      "currency": "USD",
+      "mandate_ref": null,
+      "idempotency_key": "idem-0",
+      "rail": "stripe-issuing",
+      "ts": "2026-06-20T12:00:00.000Z",
+      "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "record_hash": "cc7307f9c7e8ee1190cf29bb30362322db4ccc01846b2b663595f27e573fb15d"
+    },
+    {
+      "v": 1,
+      "seq": 1,
+      "tenant_id": "acme",
+      "chain_key": "acme|agent_42|-",
+      "agent_id": "agent_42",
+      "end_customer_id": "-",
+      "decision": "PASS",
+      "reason_code": "PASS",
+      "vendor": {
+        "name": "anthropic",
+        "mcc": "7372",
+        "country": "US"
+      },
+      "amount_minor": 2000,
+      "approved_amount_minor": 2000,
+      "currency": "USD",
+      "mandate_ref": null,
+      "idempotency_key": "idem-1",
+      "rail": "stripe-issuing",
+      "ts": "2026-06-20T12:00:00.000Z",
+      "prev_hash": "cc7307f9c7e8ee1190cf29bb30362322db4ccc01846b2b663595f27e573fb15d",
+      "record_hash": "f8f61b8e17120cf2fb684c332ebfa00c2e5f2465e70ff2f1fcb25f563a665479"
+    },
+    {
+      "v": 1,
+      "seq": 2,
+      "tenant_id": "acme",
+      "chain_key": "acme|agent_42|-",
+      "agent_id": "agent_42",
+      "end_customer_id": "-",
+      "decision": "PASS",
+      "reason_code": "PASS",
+      "vendor": {
+        "name": "aws",
+        "mcc": "7372",
+        "country": "US"
+      },
+      "amount_minor": 3000,
+      "approved_amount_minor": 3000,
+      "currency": "USD",
+      "mandate_ref": null,
+      "idempotency_key": "idem-2",
+      "rail": "stripe-issuing",
+      "ts": "2026-06-20T12:00:00.000Z",
+      "prev_hash": "f8f61b8e17120cf2fb684c332ebfa00c2e5f2465e70ff2f1fcb25f563a665479",
+      "record_hash": "63cf6e86cb7cacd71dfee7dd8ee104ee4a49a42dc8f55eeb3ab269fefb86b3e6"
+    },
+    {
+      "v": 1,
+      "seq": 3,
+      "tenant_id": "acme",
+      "chain_key": "acme|agent_42|-",
+      "agent_id": "agent_42",
+      "end_customer_id": "-",
+      "decision": "BLOCK",
+      "reason_code": "PER_CALL_CAP",
+      "vendor": {
+        "name": "openai",
+        "mcc": "7372",
+        "country": "US"
+      },
+      "amount_minor": 4000,
+      "approved_amount_minor": null,
+      "currency": "USD",
+      "mandate_ref": null,
+      "idempotency_key": "idem-3",
+      "rail": "stripe-issuing",
+      "ts": "2026-06-20T12:00:00.000Z",
+      "prev_hash": "63cf6e86cb7cacd71dfee7dd8ee104ee4a49a42dc8f55eeb3ab269fefb86b3e6",
+      "record_hash": "6962fcc1e58599b27d25328e5c1d760ce0d973a2627d51af1a3cf074433302e6"
+    },
+    {
+      "v": 1,
+      "seq": 4,
+      "tenant_id": "acme",
+      "chain_key": "acme|agent_42|-",
+      "agent_id": "agent_42",
+      "end_customer_id": "-",
+      "decision": "PASS",
+      "reason_code": "PASS",
+      "vendor": {
+        "name": "anthropic",
+        "mcc": "7372",
+        "country": "US"
+      },
+      "amount_minor": 5000,
+      "approved_amount_minor": 5000,
+      "currency": "USD",
+      "mandate_ref": null,
+      "idempotency_key": "idem-4",
+      "rail": "stripe-issuing",
+      "ts": "2026-06-20T12:00:00.000Z",
+      "prev_hash": "6962fcc1e58599b27d25328e5c1d760ce0d973a2627d51af1a3cf074433302e6",
+      "record_hash": "b711637ce29d24c74c60bc34f7ef4e965669c102a865a08ac21c5361c6d1f84c"
+    },
+    {
+      "v": 1,
+      "seq": 5,
+      "tenant_id": "acme",
+      "chain_key": "acme|agent_42|-",
+      "agent_id": "agent_42",
+      "end_customer_id": "-",
+      "decision": "PASS",
+      "reason_code": "PASS",
+      "vendor": {
+        "name": "aws",
+        "mcc": "7372",
+        "country": "US"
+      },
+      "amount_minor": 6000,
+      "approved_amount_minor": 6000,
+      "currency": "USD",
+      "mandate_ref": null,
+      "idempotency_key": "idem-5",
+      "rail": "stripe-issuing",
+      "ts": "2026-06-20T12:00:00.000Z",
+      "prev_hash": "b711637ce29d24c74c60bc34f7ef4e965669c102a865a08ac21c5361c6d1f84c",
+      "record_hash": "21f0131f2599a938bf43edc2a9ceb91e2a8d7999ff4c531df50670895f71a610"
+    },
+    {
+      "v": 1,
+      "seq": 6,
+      "tenant_id": "acme",
+      "chain_key": "acme|agent_42|-",
+      "agent_id": "agent_42",
+      "end_customer_id": "-",
+      "decision": "PASS",
+      "reason_code": "PASS",
+      "vendor": {
+        "name": "openai",
+        "mcc": "7372",
+        "country": "US"
+      },
+      "amount_minor": 7000,
+      "approved_amount_minor": 7000,
+      "currency": "USD",
+      "mandate_ref": null,
+      "idempotency_key": "idem-6",
+      "rail": "stripe-issuing",
+      "ts": "2026-06-20T12:00:00.000Z",
+      "prev_hash": "21f0131f2599a938bf43edc2a9ceb91e2a8d7999ff4c531df50670895f71a610",
+      "record_hash": "4d797bb2b30ce55da342f6d2e700ac89e64ce8da1059a3d7a381cebaff19795a"
+    },
+    {
+      "v": 1,
+      "seq": 7,
+      "tenant_id": "acme",
+      "chain_key": "acme|agent_42|-",
+      "agent_id": "agent_42",
+      "end_customer_id": "-",
+      "decision": "BLOCK",
+      "reason_code": "PER_CALL_CAP",
+      "vendor": {
+        "name": "anthropic",
+        "mcc": "7372",
+        "country": "US"
+      },
+      "amount_minor": 8000,
+      "approved_amount_minor": null,
+      "currency": "USD",
+      "mandate_ref": null,
+      "idempotency_key": "idem-7",
+      "rail": "stripe-issuing",
+      "ts": "2026-06-20T12:00:00.000Z",
+      "prev_hash": "4d797bb2b30ce55da342f6d2e700ac89e64ce8da1059a3d7a381cebaff19795a",
+      "record_hash": "7638f60decede949a56a0b4da715d135d87749034cc1ae4af9f8d55f8f7edab1"
+    },
+    {
+      "v": 1,
+      "seq": 8,
+      "tenant_id": "acme",
+      "chain_key": "acme|agent_42|-",
+      "agent_id": "agent_42",
+      "end_customer_id": "-",
+      "decision": "PASS",
+      "reason_code": "PASS",
+      "vendor": {
+        "name": "aws",
+        "mcc": "7372",
+        "country": "US"
+      },
+      "amount_minor": 9000,
+      "approved_amount_minor": 9000,
+      "currency": "USD",
+      "mandate_ref": null,
+      "idempotency_key": "idem-8",
+      "rail": "stripe-issuing",
+      "ts": "2026-06-20T12:00:00.000Z",
+      "prev_hash": "7638f60decede949a56a0b4da715d135d87749034cc1ae4af9f8d55f8f7edab1",
+      "record_hash": "3d12f90dae3b5bad9db38e5fea251ae2877b9a1253c07ce56b5f4bd37d68c792"
+    }
+  ],
+  "checkpoints": [
+    {
+      "v": 1,
+      "tenant_id": "acme",
+      "chain_key": "acme|agent_42|-",
+      "tree_size": 9,
+      "root_hash": "d45f95d8e7340ca4f6caea089f5387d7bd724b1358860b316f6e3185f8e21954",
+      "prev_checkpoint_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "ts": "2026-06-20T12:00:00.000Z",
+      "key_id": "op-2026-06",
+      "signature": "ViWOGCOCowFfoBJJDmg7LKySTMK3IMZi8PVEdgsbmXizQbrO7gEvHBl5X6YCu3otM+N2NJQgggxXrevepuW5CQ==",
+      "cosignatures": [
+        {
+          "witness_id": "witness-eu-1",
+          "ts": "2026-06-20T12:00:00.000Z",
+          "signature": "ZUlTKr1RioGqExG8oz2iaaUjTgg4WQaBKilSzt9ONALzZPjOgsz99j3ANt1HlkQoQ6cJSQ2eYXcHuOO0TtCHCA=="
+        },
+        {
+          "witness_id": "witness-us-1",
+          "ts": "2026-06-20T12:00:00.000Z",
+          "signature": "AGVTCPxLJkaCGifDD03xZA10evCF8NRPWdkDOeX92SREip+61KS7wVJoOQ3uCz5RCLwIuvwBWnY3t4xfjHkuAw=="
+        },
+        {
+          "witness_id": "witness-ch-1",
+          "ts": "2026-06-20T12:00:00.000Z",
+          "signature": "foQBsIUlhPsvuTN2v3yTNPWAq7luwuBmeAjDD47Meqk1caANaEA1kJJcHg9mwJhVFyYk4CczB9uOXMWDFOSIBw=="
+        }
+      ]
+    }
+  ],
+  "witnessing": {
+    "threshold": 2,
+    "witnesses": [
+      {
+        "witness_id": "witness-eu-1",
+        "public_key": "3cf18d8d6c21531a5c761c4fbb3d5fe3977d1f8d5f2be1be12807a5b7d0c9767",
+        "operator": "independent"
+      },
+      {
+        "witness_id": "witness-us-1",
+        "public_key": "371c9ad261422e074f5f25e727ac0107d651ea261d9f1860a590b67828cf2545",
+        "operator": "independent"
+      },
+      {
+        "witness_id": "witness-ch-1",
+        "public_key": "81f1949b6b6dff21e5c7214c725f216dc7bdba629ec59e09ada10adaef095803",
+        "operator": "independent"
+      }
+    ],
+    "note": "Independent t-of-n witness quorum (2-of-3). Each witness cosigns only after verifying an RFC 9162 consistency proof from the last head it saw, so a split-view fork cannot reach quorum. Verify offline with: comptra verify <report.json>."
+  },
+  "public_key": "42e99f85f79be9c3304feb7843413ddc7395ca8317bb36812e49fee7ba2bc9e0",
+  "key_provenance": "Ed25519 signing key generated by this Comptra instance. In production the private key is held outside the ledger database trust domain (KMS/HSM); the public key here is what the auditor verifies against. Witness keys belong to independent third parties.",
+  "canonicalization_spec": "RFC 8785 JSON Canonicalization Scheme (JCS) over the full record field set excluding record_hash. Money is integer minor units (no floats). Timestamps are RFC3339 UTC.",
+  "hashing_spec": "record_hash = SHA-256( utf8(prev_hash_hex) || JCS(record_without_record_hash) ). Genesis prev_hash = 64 zero hex chars. prev_hash is inside the hash, so insert/delete/reorder/edit all fracture.",
+  "merkle_spec": "RFC 9162 domain-separated Merkle Tree Hash: leaf = SHA-256(0x00 || JCS(record)), node = SHA-256(0x01 || left || right). Inclusion proofs are O(log n); consistency proofs prove append-only between checkpoints. Checkpoints are Ed25519-signed over JCS(checkpoint without signature or cosignatures).",
+  "threat_model": "Tamper-evident AND split-view-resistant. (1) Any post-hoc edit/insert/delete/reorder fractures the SHA-256 hash chain at an exact seq. (2) An operator with full DB write access cannot rewrite history committed in a retained Ed25519 checkpoint. (3) A malicious operator cannot present two divergent histories: each independent witness cosigns a new head ONLY after verifying an RFC 9162 consistency proof from the last head it saw, so a fork cannot reach the t-of-n quorum. The remaining assumption is minimal and named: at least one witness is honest and reachable, and the auditor retains one checkpoint + the witness public keys.",
+  "standalone_verifier": "Run `comptra verify <report.json>` to re-derive the chain + Merkle roots, verify the Ed25519 checkpoint signature, AND verify the witness quorum — all WITHOUT trusting Comptra servers. The verifier is pure and ships in @comptra/core; anyone can also run `comptra witness` to BE a witness."
+}

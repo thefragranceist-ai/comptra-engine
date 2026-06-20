@@ -3,5 +3,8 @@ export * from './hash.ts';
 export * from './chain.ts';
 export * from './policy.ts';
 export * from './merkle.ts';
+export * from './proofs.ts';
+export * from './witness.ts';
+export * from './policy-dsl.ts';
 export * from './store.ts';
 export * from './gate.ts';
