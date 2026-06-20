@@ -12,13 +12,22 @@ Comptra is a neutral, rail-agnostic **spend-control gate** plus a cryptographica
 
 Comptra is **not a bank and not a rail**. It never touches interchange; it prices per governed agent + ledger event.
 
+> **Open-core.** This repository is the public **trust + standard moat**: the verifiable core, the
+> normative wire **spec** (`spec/comptra-wire-v1.md`), a **conformance** suite (`conformance/`), and
+> **two byte-identical verifiers** — the `comptra` CLI and a zero-dependency
+> [`verifiers/comptra_verify.py`](verifiers/comptra_verify.py) (it reproduces the chain, Merkle,
+> checkpoint **and** witness quorum exactly). Openness *is* the product — "verify without trusting the
+> vendor" only works if the verifier is inspectable. The proprietary commercial layer (the **running
+> witness network**, control-plane, billing, enterprise adapters) lives in the private `comptra-cloud`
+> and consumes this core. What changed and why it's hard to copy: [`UPGRADE.md`](UPGRADE.md).
+
 ---
 
 ## Quickstart
 
 ```bash
 npm install
-npm test          # 54 tests: JCS, hash-chain + destructive tamper, policy table + latency,
+npm test          # 71 tests: + RFC 9162 proofs, witness split-view defense, policy DSL + risk, conformance,
                   #            gate concurrency, Merkle/checkpoints, API, SDK, rails
 npm run demo      # a no-server walkthrough: gate, seal, tamper -> fracture, audit report
 npm run dev       # boots the API + dashboard on http://localhost:8787 (prints a seeded API key)
@@ -74,14 +83,16 @@ A TypeScript npm-workspaces monorepo. The crypto is **real** and the verifiable 
 packages/
   schema/   zod schemas -> inferred types; the single wire contract
   core/     PURE, no I/O: canon (RFC 8785 JCS) · hash (WebCrypto SHA-256 + Ed25519) ·
-            chain (hash-chain + O(n) verifier, localizes the fracture) ·
-            merkle (RFC 9162 domain-separated) + signed checkpoints ·
-            policy (sub-ms decide) · gate (per-chain serialized, idempotent) · stores (DI seams)
+            chain (hash-chain + O(n) verifier) · merkle (RFC 9162) + signed checkpoints ·
+            proofs (RFC 9162 inclusion + consistency) · witness (t-of-n cosign, split-view defense) ·
+            policy + policy-dsl (closed-grammar evaluator + integer risk score) · gate · stores
   sdk/      the `comptra` client: discriminated-union gate(), auto-idempotency, local verify
 apps/
-  api/      Hono app (Node entry + Cloudflare worker entry) + file-backed stores + rail adapters
-  dashboard/ static "register console" (served by the API on one port)
-bin/comptra.ts  the standalone auditor CLI (verify / keygen)
+  api/      Hono app (Node + Cloudflare worker entry) + file-backed stores + rail adapters + report
+  web/      the live in-browser register console (the verifiable demo)
+bin/comptra.ts        the standalone auditor CLI: verify (chain + checkpoint + witness quorum) / witness / keygen
+verifiers/            a second, byte-identical verifier (zero-dependency Python, inline RFC 8032 Ed25519)
+spec/ + conformance/  the normative wire spec (v1) + golden vectors — the standard
 ```
 
 WebCrypto-only (not `node:crypto`) so the same bytes are produced on Node and on Cloudflare Workers. All money is **integer minor units** (no float drift); timestamps are RFC3339 UTC.
@@ -89,7 +100,7 @@ WebCrypto-only (not `node:crypto`) so the same bytes are produced on Node and on
 ## Security & threat model (honest)
 
 - **What it defends:** any post-hoc edit, insert, delete or reorder of sealed records is mathematically detectable and localized to the exact `seq` — *given the auditor retains the Ed25519-signed checkpoints*. A bare hash chain only proves internal consistency; the signed Merkle checkpoints are what make the claim meaningful against an operator who has database write access.
-- **What it does NOT yet defend:** an operator **split-view** (showing different histories to different parties). That requires external **witnesses / cosigning**; the checkpoint format is deliberately detached-signable so witness cosignatures slot in as an extra field. This is on the roadmap and stated in every report rather than glossed over.
+- **Split-view defense (shipped):** a malicious operator cannot show different histories to different parties. Each checkpoint is co-signed by an independent **t-of-n witness quorum**; a witness cosigns a new head only after verifying an RFC 9162 **consistency proof** from the last head it saw, so a fork can never reach quorum (`core/witness.ts`, `core/proofs.ts`, verified by `test/witness.test.ts`). The remaining assumption is named: ≥1 honest, reachable witness across independent trust domains. The verb upgrades from *tamper-evident* to **tamper-evident and split-view-resistant**.
 - **Key custody:** the Ed25519 signing key sits behind a `Signer` interface. In production it belongs **outside** the ledger database trust domain (KMS/HSM). The file-key here is the local-dev impl.
 - **Fail-closed:** the gate fails closed and is kept trivially simple so it rarely fails. The rail's own timeout fallback (e.g. Stripe's ~2s window) must be configured to **decline** — a shared-responsibility boundary, documented, not silently assumed.
 
@@ -109,7 +120,7 @@ The same Hono app runs on Node today and is one credential away from an edge dep
 
 **In:** the pure verifiable core (policy + chain + Merkle + signed checkpoints + verifier + report) with destructive tamper tests; the Hono gate API with key auth, tenant isolation, idempotency, RFC 9457 errors; the `comptra` SDK; the standalone verifier CLI; the register-console dashboard; the audit-report export; one-command local boot; fully-offline tests; deploy-ready entries.
 
-**Out (and why):** live money movement / processor approval / a legal entity (no credentials — `SimulatedRail` is the default so runnability is never blocked); witness/cosigning network (split-view defense, designed-for, deferred); KMS/HSM custody (interface stub); multi-node distributed rate limiting (interface ready, in-memory for now); billing/metering; SOC 2.
+**Out (and why):** live money movement / processor approval / a legal entity (no credentials — `SimulatedRail` is the default so runnability is never blocked); KMS/HSM custody (interface stub); multi-node distributed rate limiting (interface ready, in-memory for now); billing/metering; SOC 2. The *running* witness network, the control-plane and billing are the commercial layer in the private **`comptra-cloud`** (see Open-core below); the verification math + the witness *protocol* are here and open.
 
 ---
 

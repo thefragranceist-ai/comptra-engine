@@ -59,8 +59,8 @@ if (keys.isEmpty()) {
 
 const app = createApp(stores, { rail: 'simulated', pubKeyHex, signer: { privateKey: signPrivateKey, keyId: 'comptra-ed25519-1' } });
 
-// serve the static dashboard at /
-app.use('/*', serveStatic({ root: './apps/dashboard' }));
+// serve the built public register console at / (apps/web -> docs via `npm run build:web`)
+app.use('/*', serveStatic({ root: './docs' }));
 
 serve({ fetch: app.fetch, port: PORT }, (info) => {
   console.log(`\n  Comptra API + dashboard  ->  http://localhost:${info.port}`);
